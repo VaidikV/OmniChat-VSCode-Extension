@@ -1,15 +1,15 @@
 {
   "name": "omnichat-ai-vscode-ext",
   "displayName": "OmniChat AI",  
-  "description": "Include any LLM in your VSCode workflow. Search for code, documentation, and more using the power of LLMs.",
-  "version": "0.0.1",
+  "description": "Include any LLM in your VSCode workflow, including the new OpenAI open-weight models gpt-oss-120b and gpt-oss-20b. Test advanced local AI models like DeepSeek, Gemma3, GPT-OSS directly inside your editor without sending data to the cloud.",
+  "version": "0.0.2",
   "publisher": "vaidikv",
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
-    "Other"
+    "Other", "AI", "Machine Learning", "Data Science", "Chat", "Education", "Programming Languages" 
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -25,6 +25,21 @@
       }
     ]
   },
+  "keywords": [
+    "vscode-extension",
+    "llm",
+    "ai-assistant",
+    "ollama",
+    "local-llm",
+    "openai",
+    "open-weight",
+    "gpt-oss-120b",
+    "gpt-oss-20b",
+    "deepseek",
+    "gemma3",
+    "privacy-first",
+    "offline-ai"
+  ],
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -37,7 +52,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/VaidikV/DeepSeek-VSCode-Extension"
+    "url": "https://github.com/VaidikV/OmniChat-VSCode-Extension"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

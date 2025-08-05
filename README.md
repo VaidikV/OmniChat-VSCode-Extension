@@ -1,11 +1,12 @@
 # OmniChat AI 🧠💻
 
-A privacy-first VS Code extension that integrates with any local LLM through Ollama. Chat with AI models directly in your editor without sending data to the cloud.
+A privacy-first VS Code extension to chat with any local LLM through Ollama—including the new OpenAI open-weight models (gpt-oss-120b and gpt-oss-20b).
+Get code help, brainstorm, and run advanced AI—all offline. Your code and queries never leave your machine.
 
 ![demo1](ss1.jpg)
 ![demo2](ss2.jpg)
 
-- **Works with Any LLM**: Use DeepSeek, Gemma, Llama, or any other model available through Ollama
+- **Works with Any Major Open LLM**: Use DeepSeek, Gemma, Llama 3, or the newest OpenAI models (gpt-oss-120b, gpt-oss-20b) through Ollama.
 - **Real-Time AI Interaction**: Get coding assistance, brainstorm ideas, and debug issues without leaving VS Code
 - **Privacy-First**: All processing happens locally - your code and data never leave your machine
 - **Beautifully Formatted Responses**: Clean markdown rendering for better readability
@@ -24,10 +25,14 @@ A privacy-first VS Code extension that integrates with any local LLM through Oll
    - Search for "OmniChat AI"
    - Click Install
 
-2. Install your preferred LLM with Ollama:
+2. Pull your preferred LLM with Ollama:
    ```bash
-   ollama pull deepseek-r1:1.5b
+   ollama pull gpt-oss-120b
+   ollama pull gpt-oss-20b
    # Or any other model you prefer
+   ollama pull deepseek-r1:1.5b
+   ollama pull gemma:7b
+   ollama pull llama3:8b
    ```
 
 ## Usage
@@ -45,7 +50,7 @@ A privacy-first VS Code extension that integrates with any local LLM through Oll
 3. Set your preferred model:
    - Open Command Palette (Ctrl+Shift+P)
    - Run `OmniChat: Set Model`
-   - Enter the model name (e.g., `deepseek-r1:1.5b`, `gemma:7b`, etc.)
+   - Enter your model (e.g. gpt-oss-120b, gpt-oss-20b, deepseek-r1:1.5b, etc.)
 
 4. Start chatting!
    - Type your question and click "Ask"
@@ -55,11 +60,15 @@ A privacy-first VS Code extension that integrates with any local LLM through Oll
 
 OmniChat AI works with any model available through Ollama. Some popular options:
 
+- `gpt-oss-120b` — Large, enterprise-grade open-weight model
+- `gpt-oss-20b` — Great for laptops and edge computers
 - `deepseek-r1:1.5b` - Fast, lightweight coding assistant
 - `deepseek-r1:8b` - Good balance of speed and capability
 - `deepseek-r1:32b` - Most capable DeepSeek model
 - `gemma:7b` - Google's lightweight model
 - `llama3:8b` - Meta's efficient model
+
+> **Tip:** All you need is a single command (e.g. `ollama pull gpt-oss-120b`) and you’re ready to go.
 
 ## Credits
 
