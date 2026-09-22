@@ -9,3 +9,6 @@ out/
 
 # IDE settings
 .vscode/
+
+# Generated ee2 test bundles
+test/ee2/*.bundle.mjs

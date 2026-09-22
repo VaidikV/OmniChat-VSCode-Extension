@@ -17,6 +17,19 @@ export const CUSTOM_API_KEY = 'omnichat.custom.apiKey';
 
 export type SecretKey = typeof OPENROUTER_API_KEY | typeof CUSTOM_API_KEY;
 
+/**
+ * Minimal secrets surface. vscode.ExtensionContext satisfies this
+ * structurally, and unit tests pass a fake in-memory bag. Using Thenable
+ * (not Promise) keeps the real VS Code SecretStorage assignable.
+ */
+export interface SecretsHost {
+  secrets: {
+    get(key: string): Thenable<string | undefined>;
+    store(key: string, value: string): Thenable<void>;
+    delete(key: string): Thenable<void>;
+  };
+}
+
 function providerIdForKey(key: SecretKey): ProviderId {
   return key === OPENROUTER_API_KEY ? 'openrouter' : 'custom';
 }
@@ -27,7 +40,7 @@ function providerIdForKey(key: SecretKey): ProviderId {
  * the key-entry flow.
  */
 export async function requireSecret(
-  ctx: vscode.ExtensionContext,
+  ctx: SecretsHost,
   key: SecretKey,
 ): Promise<string> {
   const value = await ctx.secrets.get(key);
@@ -39,7 +52,7 @@ export async function requireSecret(
 
 /** Fetch an optional secret; undefined when absent or empty. */
 export async function optionalSecret(
-  ctx: vscode.ExtensionContext,
+  ctx: SecretsHost,
   key: SecretKey,
 ): Promise<string | undefined> {
   const value = await ctx.secrets.get(key);
@@ -48,7 +61,7 @@ export async function optionalSecret(
 
 /** Store a secret. Only call with user-entered values from the key flow. */
 export async function storeSecret(
-  ctx: vscode.ExtensionContext,
+  ctx: SecretsHost,
   key: SecretKey,
   value: string,
 ): Promise<void> {
@@ -57,7 +70,7 @@ export async function storeSecret(
 
 /** Delete a secret ("forget key" action). */
 export async function forgetSecret(
-  ctx: vscode.ExtensionContext,
+  ctx: SecretsHost,
   key: SecretKey,
 ): Promise<void> {
   await ctx.secrets.delete(key);

@@ -14,3 +14,4 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 out/**/*.test.js
 out/webview-src/**
+test/**

@@ -24,6 +24,11 @@ This project uses [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and a
 ### Fixed
 - **Trust fixes:** the markdown renderer (marked) and sanitizer (DOMPurify) are bundled, the webview ships a strict Content-Security-Policy with `connect-src 'none'` and makes zero network calls, and all LLM traffic goes through the extension host.
 - Removed all `console.log` calls from shipped code; diagnostics go to the "OmniChat" output channel.
+- **Setup wizard completion:** the "Everything works." screen now states the selected provider, the selected model, and the per-provider privacy label (Private/Cloud/Custom) before finishing.
+- **Recovery actions:** the "Ollama is not reachable" error now offers "Use OpenRouter instead" and "Edit host" alongside the existing actions.
+- **Custom endpoint errors:** an unreachable custom endpoint now shows the exact URL that was attempted.
+- **Settings:** all `omnichat.*` settings now carry human-readable titles in the Settings UI.
+- **Tests:** added mocked-HTTP tests for all three providers and the provider factory, wizard state-machine tests, a no-CDN static assertion that runs in the regular test command, and coverage measurement (`npm run test:coverage`); the ee2 sanitization/CSP/privacy suite is now wired into `npm test`.
 
 ### Changed
 - API keys live only in VS Code SecretStorage, never in settings or logs.

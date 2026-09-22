@@ -110,4 +110,15 @@ describe('recoveryFor', () => {
     assert.ok(recovery.message.includes('qwen3:4b'));
     assert.ok(!recovery.message.includes('Error'));
   });
+
+  it('OLLAMA_UNREACHABLE offers Start Ollama, Use OpenRouter instead, and Edit host', () => {
+    const recovery = recoveryFor('OLLAMA_UNREACHABLE', {
+      baseUrl: 'http://127.0.0.1:11434',
+    });
+    const byId = new Map(recovery.actions.map((a) => [a.id, a.label]));
+    assert.equal(byId.get('start-ollama'), 'Start Ollama');
+    assert.equal(byId.get('use-openrouter'), 'Use OpenRouter instead');
+    assert.equal(byId.get('edit-endpoint'), 'Edit host');
+    assert.ok(recovery.message.includes('http://127.0.0.1:11434'));
+  });
 });

@@ -174,6 +174,8 @@ export function recoveryFor(code: ErrorCode, ctx?: RecoveryContext): Recovery {
           : 'OmniChat could not reach Ollama. Start Ollama and try again.',
         actions: [
           { id: 'start-ollama', label: 'Start Ollama' },
+          { id: 'use-openrouter', label: 'Use OpenRouter instead' },
+          { id: 'edit-endpoint', label: 'Edit host' },
           { id: 'retry', label: 'Retry' },
           { id: 'check-again', label: 'Check again' },
           { id: 'open-setup', label: 'Open setup wizard' },

@@ -59,3 +59,30 @@ export async function markWizardStep(
     provider: provider ?? current.provider,
   });
 }
+
+export interface InitialStepOptions {
+  startProvider?: ProviderId;
+}
+
+/**
+ * Pure entry-step resolution for runSetupWizard (decision #30 semantics):
+ * a startProvider override jumps to step 2 (the provider path), an
+ * interrupted wizard resumes at the furthest completed step, a previously
+ * completed wizard restarts at step 1, and a never-started wizard begins at
+ * step 0 (welcome). Kept pure so the state machine is unit-testable.
+ */
+export function resolveInitialStep(
+  persisted: WizardPersistedState,
+  opts: InitialStepOptions = {},
+): number {
+  if (opts.startProvider) {
+    return 2;
+  }
+  if (persisted.status === 'in-progress') {
+    return persisted.furthestStep;
+  }
+  if (persisted.status === 'ready') {
+    return 1;
+  }
+  return 0;
+}

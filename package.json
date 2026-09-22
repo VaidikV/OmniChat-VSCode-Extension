@@ -60,32 +60,38 @@
         "omnichat.custom.apiKeyRequired": {
           "default": false,
           "description": "Whether the custom endpoint requires an API key (stored in SecretStorage, never in settings).",
-          "type": "boolean"
+          "type": "boolean",
+          "title": "API key required"
         },
         "omnichat.custom.baseUrl": {
           "default": "",
           "description": "Base URL of an OpenAI-compatible endpoint (LM Studio, vLLM, llama.cpp server, ...).",
-          "type": "string"
+          "type": "string",
+          "title": "Custom endpoint base URL"
         },
         "omnichat.custom.model": {
           "default": "",
           "description": "Default model id for the custom endpoint, used when the endpoint has no model list.",
-          "type": "string"
+          "type": "string",
+          "title": "Custom endpoint model"
         },
         "omnichat.ollama.baseUrl": {
           "default": "http://127.0.0.1:11434",
           "description": "Base URL of the Ollama server.",
-          "type": "string"
+          "type": "string",
+          "title": "Ollama base URL"
         },
         "omnichat.ollama.model": {
           "default": "",
           "description": "Ollama model id to chat with (e.g. qwen3:8b). Pick from the model switcher.",
-          "type": "string"
+          "type": "string",
+          "title": "Ollama model"
         },
         "omnichat.openrouter.model": {
           "default": "openai/gpt-oss-20b",
           "description": "OpenRouter model id to chat with.",
-          "type": "string"
+          "type": "string",
+          "title": "OpenRouter model"
         },
         "omnichat.provider": {
           "default": "ollama",
@@ -100,19 +106,20 @@
             "Use OpenRouter's cloud API. Requires an API key; prompts leave your machine.",
             "Any OpenAI-compatible endpoint (LM Studio, vLLM, llama.cpp server, ...)."
           ],
-          "type": "string"
+          "type": "string",
+          "title": "Provider"
         },
         "omnichat.requestTimeout": {
           "default": 300,
           "description": "Seconds without receiving a token before a request is treated as stalled and cancelled.",
           "minimum": 30,
-          "type": "number"
+          "type": "number",
+          "title": "Request timeout (seconds)"
         }
       },
       "title": "OmniChat"
     }
   },
-  "dependencies": {},
   "description": "The simplest private AI assistant for VS Code. Chat with local models via Ollama, frontier models via OpenRouter, or any OpenAI-compatible endpoint, right inside your editor. Guided setup, selection context, and one-click code insertion.",
   "devDependencies": {
     "@types/dompurify": "^3.2.0",
@@ -123,9 +130,11 @@
     "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^4.0.0",
     "dompurify": "^3.2.0",
     "esbuild": "^0.25.0",
     "eslint": "^9.16.0",
+    "jsdom": "^30.1.1",
     "marked": "^16.0.0",
     "typescript": "^5.7.2"
   },
@@ -158,11 +167,14 @@
     "compile": "npm run build:webview && tsc -p ./",
     "lint": "eslint src",
     "pretest": "npm run compile && npm run lint",
-    "test": "npm run test:unit",
+    "test": "npm run test:unit && npm run test:ee2",
     "test:e2e": "vscode-test",
     "test:unit": "node --test \"out/**/*.test.js\"",
     "vscode:prepublish": "npm run compile",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "test:ee2:build": "node test/ee2/build-bundles.mjs",
+    "test:ee2": "npm run test:ee2:build && node --test test/ee2/*.test.mjs",
+    "test:coverage": "npm run test:ee2:build && node --test --experimental-test-coverage \"out/**/*.test.js\" \"test/ee2/*.test.mjs\""
   },
   "version": "0.1.0"
 }

@@ -13,7 +13,9 @@
  *      - Custom: presets + custom URL, optional key, connection test,
  *        model list
  *   3. Test: auto-sends "Say hello in one short sentence." as the live test
- *   4. Done: commits configuration, toasts "OmniChat is ready. Ask anything."
+ *   4. Done: "Everything works." completion screen states the provider, the
+ *      model, and the per-provider privacy label, then commits configuration
+ *      and toasts "OmniChat is ready. Ask anything."
  *
  * Resume semantics (decision #30): never-started begins at step 1,
  * interrupted resumes at the furthest completed step, cancelling leaves
@@ -32,8 +34,8 @@ import { OpenRouterProvider } from '../providers/openrouter.js';
 import { isAbortError } from '../providers/stream.js';
 import type { LLMProvider, ProviderId } from '../providers/types.js';
 import { CUSTOM_API_KEY, OPENROUTER_API_KEY, storeSecret } from '../state/secrets.js';
-import { readSettings } from '../state/settings.js';
-import { markWizardStep, readWizardState, writeWizardState } from '../state/wizardState.js';
+import { applyDefaults, readSettings, type OmniChatSettings } from '../state/settings.js';
+import { markWizardStep, readWizardState, resolveInitialStep, writeWizardState } from '../state/wizardState.js';
 import { info } from '../util/log.js';
 import type { ExtensionDeps, WizardOptions } from './deps.js';
 import { logErrorDetail, presentError } from './errorPresenter.js';
@@ -46,7 +48,7 @@ import {
   type OllamaDetection,
 } from './flows.js';
 import { pickOpenRouterModel, STARTER_MODELS, starterPullList } from './modelPicker.js';
-import { providerDisplayName, updateSetting } from './settingsUtil.js';
+import { privacyLabelFor, privacyTag, providerDisplayName, updateSetting } from './settingsUtil.js';
 
 // ---------------------------------------------------------------------------
 // Buffered wizard choices (committed at Done; cancel leaves config untouched)
@@ -659,7 +661,7 @@ async function screenCustom(
       () => provider.checkConnection(),
     );
   } catch {
-    const retry = await customUnreachablePrompt();
+    const retry = await customUnreachablePrompt(baseUrl);
     if (retry === 'again') {
       return screenCustom(deps, buffer);
     }
@@ -723,10 +725,10 @@ async function pickYesNo(placeHolder: string): Promise<boolean | undefined> {
   return r.picked.action === 'yes';
 }
 
-/** E6: "OmniChat couldn't reach that address." */
-async function customUnreachablePrompt(): Promise<'again' | 'edit' | undefined> {
+/** E6: "OmniChat couldn't reach {baseUrl}." (S2 #6: show the exact URL attempted.) */
+async function customUnreachablePrompt(baseUrl: string): Promise<'again' | 'edit' | undefined> {
   const qp = makePick<VariantItem>(
-    "OmniChat couldn't reach that address.",
+    `OmniChat couldn't reach ${baseUrl}.`,
     'Check the address and try again.',
     [
       { label: 'Try again', action: 'again' },
@@ -765,6 +767,29 @@ function bufferModel(buffer: WizardBuffer): string {
     case 'custom':
       return buffer.customModel ?? '';
   }
+}
+
+/**
+ * A settings snapshot matching the wizard buffer, for per-provider privacy
+ * labels on the completion screen (the buffer is not committed yet). The
+ * Ollama host comes from real settings so a non-localhost host edits via
+ * recovery shows the Network label, not the local one.
+ */
+function bufferSettings(buffer: WizardBuffer): OmniChatSettings {
+  return applyDefaults({
+    provider: buffer.provider,
+    ollama: {
+      baseUrl: readSettings().ollama.baseUrl,
+      model: buffer.ollamaModel ?? '',
+    },
+    openrouter: {
+      model: buffer.openrouterModel ?? '',
+    },
+    custom: {
+      baseUrl: buffer.customBaseUrl ?? '',
+      model: buffer.customModel ?? '',
+    },
+  });
 }
 
 interface TestAttempt {
@@ -839,9 +864,12 @@ async function screenTest(
   const attempt = await attemptTest(deps, buffer);
   if (attempt.ok) {
     const preview = attempt.reply.trim().slice(0, 160) || 'OK';
+    // S1 #2 (D12): the completion screen must state the selected provider,
+    // the selected model, and the per-provider privacy label.
+    const summarySettings = bufferSettings(buffer);
     const qp = makePick<VariantItem>(
       'Everything works.',
-      'OmniChat will say hello using your new setup.',
+      `${providerDisplayName(buffer.provider)} · ${bufferModel(buffer)} · ${privacyTag(summarySettings)}. ${privacyLabelFor(summarySettings)}`,
       [{ label: 'Start chatting', detail: `OmniChat said: "${preview}"`, action: 'chat' }],
     );
     const r = await showPick(qp, { back: true });
@@ -924,17 +952,10 @@ export async function runSetupWizard(
   const buffer: WizardBuffer = {
     provider: opts.startProvider ?? persisted.provider ?? 'ollama',
   };
-  let step: number;
   if (opts.startProvider) {
-    step = 2;
     await markWizardStep(deps.ctx, 1, buffer.provider);
-  } else if (persisted.status === 'in-progress') {
-    step = persisted.furthestStep;
-  } else if (persisted.status === 'ready') {
-    step = 1;
-  } else {
-    step = 0;
   }
+  let step = resolveInitialStep(persisted, { startProvider: opts.startProvider });
 
   let committed = false;
   const finish = async () => {
