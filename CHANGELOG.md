@@ -11,6 +11,27 @@ This project uses [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and a
 
 ---
 
+## [0.1.0] – 2026-09-22
+
+### Added
+- **First-run setup wizard:** a guided 4-step QuickPick flow (pick a provider, configure it, live-test it) with Ollama detection, one-click starter model downloads with progress and cancel, OpenRouter key entry with inline validation, and custom endpoint presets. Skippable, resumable, and re-runnable from the welcome view, the status bar, or "OmniChat: Setup".
+- **Provider support:** Ollama (local), OpenRouter (cloud, API key in SecretStorage), and any OpenAI-compatible endpoint (LM Studio, vLLM, llama.cpp server) behind one provider switcher.
+- **Grouped model switcher:** "OmniChat: Switch model or provider" lists installed Ollama models with sizes, OpenRouter models with a pinned Popular group, vendor groups, pricing hints and a Cloud tag, plus a refresh action. Mid-chat switches preserve the transcript and disclose where the next message goes.
+- **Welcome view and status bar:** the OmniChat activity bar view walks through setup, then shows the active model, try-it prompts, and the per-provider privacy line; the status bar shows provider, model, and a Private/Cloud/Custom tag.
+- **Editor slice:** "OmniChat: Ask about selection" sends the selected code into the chat input as a quoted block (editor context menu, 8,000-character truncation); "Insert code at cursor" inserts the latest response's code at the editor cursor as a single undoable edit.
+- **Actionable errors:** every failure (Ollama unreachable, model not installed, bad API key, billing, rate limits, timeouts) shows a plain-language message with fix buttons instead of raw errors.
+
+### Fixed
+- **Trust fixes:** the markdown renderer (marked) and sanitizer (DOMPurify) are bundled, the webview ships a strict Content-Security-Policy with `connect-src 'none'` and makes zero network calls, and all LLM traffic goes through the extension host.
+- Removed all `console.log` calls from shipped code; diagnostics go to the "OmniChat" output channel.
+
+### Changed
+- API keys live only in VS Code SecretStorage, never in settings or logs.
+- Stop-generation now aborts the in-flight request uniformly across providers via AbortController, keeping the partial response.
+- Privacy claims are per-provider: local providers are labeled Private, OpenRouter is labeled Cloud, custom endpoints carry a verify-it-yourself note.
+
+---
+
 ## [0.0.2] – 2025-08-05
 
 ### Added

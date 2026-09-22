@@ -1,6 +1,9 @@
 .vscode/**
 .vscode-test/**
 src/**
+src/webview-src/**
+build-webview.mjs
+media/chat-style.css
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
@@ -9,3 +12,5 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+out/**/*.test.js
+out/webview-src/**
